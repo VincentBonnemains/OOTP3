@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 
 import window.*;
 
@@ -70,9 +71,11 @@ public abstract class NodeElement	extends ModelElement {
     
     
     
-    public void		doRightMousePressed(MouseEvent event, Graphics graphicsContext) {
-      
+    public void		doRightMousePressed(MouseEvent event, Graphics graphicsContext) {        
+         menu.show(event.getComponent(), event.getX(), event.getY());
     }
+    
+    
     
     /*
      *  Pseudo mouse button event handlers for the start of dragging a node. We note
@@ -198,10 +201,23 @@ public abstract class NodeElement	extends ModelElement {
     
     protected ArrayList			theRelations	= new ArrayList(8);
     
-    protected Point			theMousePoint;		// during dragging
-    protected Point			theStartMousePoint;
-    
+    protected Point				theMousePoint;		// during dragging
+    protected Point				theStartMousePoint;
+    private 					NodeElementMenu menu = new NodeElementMenu();
+
   
+    private class NodeElementMenu extends JPopupMenu {    	
+    	JMenuItem item1,item2,item3;
+         
+         NodeElementMenu() {
+        	 JMenuItem item1 = new JMenuItem("menu item 1");
+             JMenuItem item2 = new JMenuItem("menu item 2");
+             JMenuItem item3 = new JMenuItem("menu item 3");
+        	 add(item1);
+             add(item2);
+             add(item3);
+         }
+    } // class: NodeElementMenu
 
 
 
