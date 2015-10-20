@@ -28,6 +28,7 @@ public abstract class NodeElement	extends ModelElement {
     	bounds = new Rectangle(upperLeftX, upperLeftY, DEFAULTWIDTH, DEFAULTHEIGHT);
     	
     	showFlag = false;
+    	ColliePropertyPanel.getColliePropertyPanel().setNode(this);
     }
 
     public		NodeElement(Point mousePoint) {
@@ -83,6 +84,7 @@ public abstract class NodeElement	extends ModelElement {
      *	the mouse point as the start point of the dragging activity.
      */
     public void		doLeftMousePressed(MouseEvent event, Graphics graphicsContext) {
+    	ColliePropertyPanel.getColliePropertyPanel().setNode(this);
     	left_clicked = true;
     	theStartMousePoint = event.getPoint();
     	diff_x = getLocation().getX()-theStartMousePoint.getX();
@@ -207,15 +209,36 @@ public abstract class NodeElement	extends ModelElement {
 
   
     private class NodeElementMenu extends JPopupMenu {    	
-    	JMenuItem item1,item2,item3;
-         
+    	JMenuItem item1,item2,item3,item4;
+    	ActionListener menuListener;
+    	    
          NodeElementMenu() {
-        	 JMenuItem item1 = new JMenuItem("menu item 1");
-             JMenuItem item2 = new JMenuItem("menu item 2");
-             JMenuItem item3 = new JMenuItem("menu item 3");
-        	 add(item1);
-             add(item2);
-             add(item3);
+			 menuListener = new ActionListener() {
+				 public void actionPerformed(ActionEvent event) {
+					 if(event.getActionCommand().equals(EDITINSTANCE)){
+					 	
+					 } else if (event.getActionCommand().equals(EDITATTRIBUTES)) {
+						 
+					 } else if (event.getActionCommand().equals(SHOWATTRIBUTES)) {
+						 
+					 } else if (event.getActionCommand().equals(DELETEINSTANCE)) {
+						 
+					 }
+				 }
+			 };
+			       	    
+			 JMenuItem item1 = new JMenuItem(EDITINSTANCE);
+			 JMenuItem item2 = new JMenuItem(EDITATTRIBUTES);
+			 JMenuItem item3 = new JMenuItem(SHOWATTRIBUTES);
+			 JMenuItem item4 = new JMenuItem(DELETEINSTANCE);
+			 item1.addActionListener(menuListener);
+			 item2.addActionListener(menuListener);
+			 item3.addActionListener(menuListener);
+			 item4.addActionListener(menuListener);
+			 add(item1);
+			 add(item2);
+			 add(item3);
+			 add(item4);         
          }
     } // class: NodeElementMenu
 

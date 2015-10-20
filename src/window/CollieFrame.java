@@ -297,4 +297,3 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     }
 
 }	// class CollieFrame
-

@@ -21,7 +21,6 @@ public class Collie {
         CollieFrame.getCollieFrame();
         
         System.out.println("PROGRAM END");
-        System.out.println("Arthur changes");
     }
 
 }	// class Collie
