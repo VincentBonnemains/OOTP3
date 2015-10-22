@@ -20,6 +20,8 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 import diagram.NodeElement;
 
@@ -40,9 +42,6 @@ public final class ColliePropertyPanel extends JPanel {
         JScrollPane pleft = new JScrollPane(tableau_gauche);
     	JScrollPane pright = new JScrollPane(tableau);
     	
-    	
-    	
-    	
     	this.add(pleft);
     	this.add(pright);
     	
@@ -51,6 +50,7 @@ public final class ColliePropertyPanel extends JPanel {
     public void setNode(NodeElement e){
     	selected = e;
     	((AbstractTableModel) tableau.getModel()).fireTableDataChanged();
+    	((AbstractTableModel) tableau_gauche.getModel()).fireTableDataChanged();
     }
     
     
@@ -60,26 +60,46 @@ public final class ColliePropertyPanel extends JPanel {
     
 // ---------- special class -------------------------------
     private class modeleRef extends AbstractTableModel {
-    	private final String[] entetes = {"Ref", "Classe"};
+    	private final String[] entetes = {"Reference", "Classe"};
 		@Override
+		
+		public boolean isCellEditable(int row,int column){
+			if(selected != null)
+				return true;
+			else
+				return false;
+		}
+		
 		public int getColumnCount() {
 			return 2;
 		}
 
 		@Override
 		public int getRowCount() {
-			return 2;
+			return 1;
 		}
 		
-		public String getRowName(int columnIndex) {
+		public String getColumnName(int columnIndex) {
             return entetes[columnIndex];
         }
 
-		@Override
-		public Object getValueAt(int arg0, int arg1) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+		public Object getValueAt(int rowIndex, int columnIndex) {        	
+        	if(selected != null){
+        		if(columnIndex == 0)
+        			return selected.getName();
+        		else
+        			return selected.getClassifier();
+        	}
+        	return "";
+        }
+        
+        public void setValueAt(Object value, int rowIndex, int columnIndex) {
+        	if(columnIndex == 0)
+        		selected.setName((String)value);
+        	else
+        		selected.setClassifier((String) value);
+        	fireTableDataChanged();
+        } 
     
     }
     
@@ -144,14 +164,8 @@ public final class ColliePropertyPanel extends JPanel {
 	        	}
         	}
         	fireTableDataChanged();
-        }
-        
-        
-
-			
-        	
+        }   	
     }
-    
     
 
     
