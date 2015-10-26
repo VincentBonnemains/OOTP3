@@ -68,6 +68,15 @@ public class CollaborationDiagram {
     	}
     }
     
+    public void		eraseAll(){
+    	modelElements.clear();
+    }
+    
+    public void delete(ModelElement m){
+    	modelElements.remove(m);
+    	
+    }
+    
     
     
 // ---------- properties ----------------------------------

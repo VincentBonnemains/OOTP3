@@ -23,7 +23,6 @@ public final class CollieDiagramPanel 		extends JPanel {
     public static CollieDiagramPanel	getCollieDiagramPanel()		{ return collieDiagramPanel; }
     
     
-    
     protected 				CollieDiagramPanel() {
     	super(new BorderLayout());
     	

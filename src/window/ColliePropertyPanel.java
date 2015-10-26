@@ -30,17 +30,17 @@ import diagram.NodeElement;
 public final class ColliePropertyPanel extends JPanel {
 
     public static ColliePropertyPanel	getColliePropertyPanel()	{ return colliePropertyPanel; }
-    private NodeElement selected;
-    private JTable tableau;
+    private NodeElement node_Selected;
+    private JTable tableau_droite;
     private JTable tableau_gauche;
     
     protected 				ColliePropertyPanel() {
     	super();
     	this.setLayout(new GridLayout(1,2));
-        tableau = new JTable(new modeleAttributs());
+        tableau_droite = new JTable(new modeleAttributs());
         tableau_gauche = new JTable(new modeleRef());
         JScrollPane pleft = new JScrollPane(tableau_gauche);
-    	JScrollPane pright = new JScrollPane(tableau);
+    	JScrollPane pright = new JScrollPane(tableau_droite);
     	
     	this.add(pleft);
     	this.add(pright);
@@ -48,9 +48,17 @@ public final class ColliePropertyPanel extends JPanel {
     }
     
     public void setNode(NodeElement e){
-    	selected = e;
-    	((AbstractTableModel) tableau.getModel()).fireTableDataChanged();
+    	node_Selected = e;
+    	((AbstractTableModel) tableau_droite.getModel()).fireTableDataChanged();
     	((AbstractTableModel) tableau_gauche.getModel()).fireTableDataChanged();
+    }
+    
+    public JTable getTableau_droite(){
+    	return tableau_droite;
+    }
+    
+    public JTable getTableau_gauche(){
+    	return tableau_gauche;
     }
     
     
@@ -64,7 +72,7 @@ public final class ColliePropertyPanel extends JPanel {
 		@Override
 		
 		public boolean isCellEditable(int row,int column){
-			if(selected != null)
+			if(node_Selected != null)
 				return true;
 			else
 				return false;
@@ -84,22 +92,23 @@ public final class ColliePropertyPanel extends JPanel {
         }
 
 		public Object getValueAt(int rowIndex, int columnIndex) {        	
-        	if(selected != null){
+        	if(node_Selected != null){
         		if(columnIndex == 0)
-        			return selected.getName();
+        			return node_Selected.getName();
         		else
-        			return selected.getClassifier();
+        			return node_Selected.getClassifier();
         	}
         	return "";
         }
         
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
         	if(columnIndex == 0)
-        		selected.setName((String)value);
+        		node_Selected.setName((String)value);
         	else
-        		selected.setClassifier((String) value);
+        		node_Selected.setClassifier((String) value);
         	fireTableDataChanged();
-        } 
+        	CollieModelPanel.getCollieModelPanel().repaint();
+        }
     
     }
     
@@ -113,9 +122,9 @@ public final class ColliePropertyPanel extends JPanel {
      
         @Override
         public boolean isCellEditable(int row, int column) {
-        	if(selected == null || row > selected.getAttributes().size()) return false;
+        	if(node_Selected == null || row > node_Selected.getAttributes().size()) return false;
 
-        	if(column == 1 && row >= selected.getAttributes().size()) 
+        	if(column == 1 && row >= node_Selected.getAttributes().size()) 
         		return false;
         	
         	return true;
@@ -134,8 +143,8 @@ public final class ColliePropertyPanel extends JPanel {
         }
      
         public Object getValueAt(int rowIndex, int columnIndex) {        	
-        	if(selected == null || rowIndex >= selected.getAttributes().size()) return "";
-        	String s1 = (String) selected.getAttributes().get(rowIndex);
+        	if(node_Selected == null || rowIndex >= node_Selected.getAttributes().size()) return "";
+        	String s1 = (String) node_Selected.getAttributes().get(rowIndex);
         	String[] ts = s1.split(" ");
         	if(ts.length > 1) 
         		return ts[columnIndex];
@@ -149,21 +158,22 @@ public final class ColliePropertyPanel extends JPanel {
         	String s = ((String)value).replaceAll(" ", "_");
         	if(s.equals("")) return;
         	
-        	if(rowIndex >= selected.getAttributes().size()){
-        		selected.getAttributes().add((String)value);
+        	if(rowIndex >= node_Selected.getAttributes().size()){
+        		node_Selected.getAttributes().add((String)value);
         	} else {
-	        	String   s1 = (String) selected.getAttributes().get(rowIndex);
+	        	String   s1 = (String) node_Selected.getAttributes().get(rowIndex);
 	        	String[] c  = s1.split(" ");
 	        	if(c.length > 1) {
 		        	c[columnIndex] = (String) value;
-		        	selected.getAttributes().set(rowIndex, c[0]+" "+c[1]);
+		        	node_Selected.getAttributes().set(rowIndex, c[0]+" "+c[1]);
 	        	} else if(c.length == 1)
-	        		selected.getAttributes().set(rowIndex, c[0]+" "+s);
+	        		node_Selected.getAttributes().set(rowIndex, c[0]+" "+s);
 	        	else {
-	        		selected.getAttributes().set(rowIndex, c[0]);
+	        		node_Selected.getAttributes().set(rowIndex, c[0]);
 	        	}
         	}
         	fireTableDataChanged();
+        	CollieModelPanel.getCollieModelPanel().repaint();
         }   	
     }
     

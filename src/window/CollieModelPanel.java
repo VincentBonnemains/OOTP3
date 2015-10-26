@@ -42,8 +42,9 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
 //  If the model has been dirtied, then we redraw it.
 //
     public void				propertyChange(PropertyChangeEvent event) {
-    	if(event.getPropertyName().equals(CollieModelPanel.MODEL_DIRTIED_CHANGED_PROPERTY))
+    	if(event.getPropertyName().equals(CollieModelPanel.MODEL_DIRTIED_CHANGED_PROPERTY)){
     	    this.repaint();
+    	}
     }
     
     
@@ -107,6 +108,15 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
     
     public void			deselectAll() {
     	diagram.deselectAll();
+    }
+    
+    public void delete(ModelElement n){
+    	diagram.delete(n);
+    }
+    
+    public void	raz(){
+    	diagram.eraseAll();
+    	repaint();
     }
     
     

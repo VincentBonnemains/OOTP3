@@ -35,6 +35,9 @@ public abstract class NodeElement	extends ModelElement {
     	this(mousePoint.x, mousePoint.y);
     }
     
+    public NodeElement node(){
+    	return this;
+	}
     
     
     public boolean	isHit(int mouseX, int mouseY) {
@@ -61,7 +64,8 @@ public abstract class NodeElement	extends ModelElement {
     
     
     public boolean	isShowAttributes()		{ return showFlag; }
-    public void		setShowAttributes(boolean show)	{ showFlag = show; }
+    public void		setShowAttributes(boolean show)	{ showFlag = show;
+    											       menu = new NodeElementMenu();}
     
     
     
@@ -215,22 +219,37 @@ public abstract class NodeElement	extends ModelElement {
          NodeElementMenu() {
 			 menuListener = new ActionListener() {
 				 public void actionPerformed(ActionEvent event) {
+					 CollieModelPanel m = CollieModelPanel.getCollieModelPanel();
+					 ColliePropertyPanel prop = ColliePropertyPanel.getColliePropertyPanel();
 					 if(event.getActionCommand().equals(EDITINSTANCE)){
-					 	
+					 		
 					 } else if (event.getActionCommand().equals(EDITATTRIBUTES)) {
-						 
+						 	
 					 } else if (event.getActionCommand().equals(SHOWATTRIBUTES)) {
-						 
+						 	setShowAttributes(true);
+					 } else if (event.getActionCommand().equals(HIDEATTRIBUTES)) {
+						 	setShowAttributes(false);
 					 } else if (event.getActionCommand().equals(DELETEINSTANCE)) {
-						 
+						 NodeElement node = node();
+						 //Suppression des liens
+						 for(int i = 0;i < node.theRelations.size();++i)
+							 m.delete((ModelElement)node.theRelations.get(i));
+						 //Suppression du noeud
+						 m.delete(node());
 					 }
+					 m.repaint();
 				 }
 			 };
 			       	    
-			 JMenuItem item1 = new JMenuItem(EDITINSTANCE);
-			 JMenuItem item2 = new JMenuItem(EDITATTRIBUTES);
-			 JMenuItem item3 = new JMenuItem(SHOWATTRIBUTES);
-			 JMenuItem item4 = new JMenuItem(DELETEINSTANCE);
+			 item1 = new JMenuItem(EDITINSTANCE);
+			 item2 = new JMenuItem(EDITATTRIBUTES);
+			 if(showFlag){
+				 item3 = new JMenuItem(HIDEATTRIBUTES);
+			 }
+			 else{
+				 item3 = new JMenuItem(SHOWATTRIBUTES);
+			 }
+			 item4 = new JMenuItem(DELETEINSTANCE);
 			 item1.addActionListener(menuListener);
 			 item2.addActionListener(menuListener);
 			 item3.addActionListener(menuListener);

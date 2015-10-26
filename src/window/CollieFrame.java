@@ -48,9 +48,11 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 //
     public void				propertyChange(PropertyChangeEvent event) {
     	if(event.getPropertyName().equals(CollieModelPanel.MODEL_DIRTIED_CHANGED_PROPERTY)) {
+    		System.out.println("ok1");
     	    fileSaveAction.setEnabled(true);
     	    fileSaveAsAction.setEnabled(true);
     	}
+    	System.out.println("ok11");
     }
     
     
@@ -60,6 +62,7 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
 	Container contentPane = this.getContentPane();
 	contentPane.setLayout(new BorderLayout());
+	
 	ColliePanel colliePanel = ColliePanel.getColliePanel(); //new ColliePanel();
 	contentPane.add(colliePanel, BorderLayout.CENTER);
 
@@ -263,7 +266,8 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
 
     	public void				actionPerformed(ActionEvent event) {
-    		 System.out.println(event.getActionCommand());
+    		 ColliePanel panel = ColliePanel.getColliePanel();
+    		 panel.raz();
     		 }
     	
     }
@@ -291,7 +295,7 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
 
     	public void				actionPerformed(ActionEvent event) {
-    		 System.out.println(event.getActionCommand());
+    		 //getCollieFrame().ta
     		 }
     	
     }

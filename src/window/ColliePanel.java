@@ -17,6 +17,7 @@ package window;
 
 
 import java.awt.*;
+
 import javax.swing.*;
 
 
@@ -24,8 +25,6 @@ import javax.swing.*;
 public final class ColliePanel 		extends JPanel {
 
     public static ColliePanel		getColliePanel()	{ return colliePanel; }
-    
-    
     
     protected 				ColliePanel() {
     	super(new BorderLayout());
@@ -39,6 +38,10 @@ public final class ColliePanel 		extends JPanel {
     	this.add(projectDiagramPropertySplitPane, BorderLayout.CENTER);
     }
     
+    public void raz(){
+    	CollieModelPanel modelPanel = CollieModelPanel.getCollieModelPanel();
+    	modelPanel.raz();
+    }
     
     
     public void		    	setDivider() {
