@@ -37,7 +37,7 @@ public final class ColliePropertyPanel extends JPanel {
     protected 				ColliePropertyPanel() {
     	super();
     	this.setLayout(new GridLayout(1,2));
-        tableau_droite = new JTable(new modeleAttributs());
+        tableau_droite = new JTable(new modelTableAttributs());
         tableau_gauche = new JTable(new modeleRef());
         JScrollPane pleft = new JScrollPane(tableau_gauche);
     	JScrollPane pright = new JScrollPane(tableau_droite);
@@ -112,11 +112,11 @@ public final class ColliePropertyPanel extends JPanel {
     
     }
     
-    private class modeleAttributs extends AbstractTableModel {
+    private class modelTableAttributs extends AbstractTableModel {
      
         private final String[] entetes = {"Attributes", "Value"};
      
-        public modeleAttributs() {
+        public modelTableAttributs() {
             super();     
         }
      

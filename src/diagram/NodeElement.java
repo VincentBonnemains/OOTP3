@@ -13,13 +13,14 @@ package diagram;
 
 
 import java.awt.*;
+
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
 import window.*;
-
+import dialog.*;
 
 
 public abstract class NodeElement	extends ModelElement {
@@ -221,16 +222,20 @@ public abstract class NodeElement	extends ModelElement {
 				 public void actionPerformed(ActionEvent event) {
 					 CollieModelPanel m = CollieModelPanel.getCollieModelPanel();
 					 ColliePropertyPanel prop = ColliePropertyPanel.getColliePropertyPanel();
+					 NodeElement node = node();
 					 if(event.getActionCommand().equals(EDITINSTANCE)){
-					 		
+					 		JInstanceDialog instDiag = new JInstanceDialog(null,"Instance edition",true,node);
+					 		node = instDiag.showDialog();
+					 		prop.setNode(node);
 					 } else if (event.getActionCommand().equals(EDITATTRIBUTES)) {
-						 	
+						 	JAttributesDialog atDiag = new JAttributesDialog(null, "Attributes edition", true,node.attributes);
+					        node.attributes = atDiag.showDialog(); 
+					        prop.setNode(node);
 					 } else if (event.getActionCommand().equals(SHOWATTRIBUTES)) {
 						 	setShowAttributes(true);
 					 } else if (event.getActionCommand().equals(HIDEATTRIBUTES)) {
 						 	setShowAttributes(false);
 					 } else if (event.getActionCommand().equals(DELETEINSTANCE)) {
-						 NodeElement node = node();
 						 //Suppression des liens
 						 for(int i = 0;i < node.theRelations.size();++i)
 							 m.delete((ModelElement)node.theRelations.get(i));
