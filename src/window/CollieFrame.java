@@ -37,6 +37,7 @@ import diagram.ModelElement;
 import diagram.NodeElement;
 import dialog.JAttributesDialog;
 import dialog.JInstanceDialog;
+import dialog.JOpenDialog;
 import dialog.JSaveAsDialog;
 
 
@@ -265,13 +266,10 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 			 if ( returnVal == JFileChooser.APPROVE_OPTION ) 
 			 {
 				File file = jsad.getSelectedFile();
-				String name = file.getName();
-				String path = file.getAbsolutePath();
-				
-				
+				String path = file.getAbsolutePath();				
 				
 				System.out.println(path);
-				System.out.println(name);
+				//Enregistrer dans ce chemin absolu....
 			 }
     	}
     	
@@ -293,14 +291,25 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     class FileOpenAction extends AbstractAction {
 
     	public				FileOpenAction(String label,ImageIcon image) {
-	    super(label);
+    		super(label);
     	}
 
 
 
     	public void				actionPerformed(ActionEvent event) {
     		 System.out.println(event.getActionCommand());
-    		 }
+    		 JOpenDialog jod = new JOpenDialog();
+    		 
+    		 int returnVal = jod.showOpenDialog(null);
+			 if ( returnVal == JFileChooser.APPROVE_OPTION ) 
+			 {
+				File file = jod.getSelectedFile();
+				String path = file.getAbsolutePath();				
+				
+				System.out.println(path);
+				//Ouvrir ce fichier....
+			 }
+		 }
     	
     }
     
