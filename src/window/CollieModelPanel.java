@@ -90,8 +90,9 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
     
     
     public void		add(ModelElement element) {
-    	if(element != null)
+    	if(element != null) {
     	    diagram.add(element);
+    	}
     }
     
     
@@ -123,7 +124,7 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
     
 // ---------- statics -------------------------------------
 
-    public static final String		MODEL_DIRTIED_CHANGED_PROPERTY	= "Model dirtied";
+    public static  String		MODEL_DIRTIED_CHANGED_PROPERTY	= "Model dirtied";
     
     
     
@@ -231,7 +232,10 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
             CollieModelPanel.this.addModelElement(nodeElement);
             
             CollieModelPanel.this.repaint();
-    	}
+            
+            PropertyChangeEvent pce = new PropertyChangeEvent(this, MODEL_DIRTIED_CHANGED_PROPERTY, null, null);            
+            CollieFrame.getCollieFrame().propertyChange(pce);
+    	} 
     	
     // ---------- properties ------------------------------
     

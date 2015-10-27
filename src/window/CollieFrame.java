@@ -25,11 +25,19 @@ package window;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.border.*;
 
+
 import collie.Collie;
+import diagram.ModelElement;
+import diagram.NodeElement;
+import dialog.JAttributesDialog;
+import dialog.JInstanceDialog;
+import dialog.JSaveAsDialog;
 
 
 
@@ -48,11 +56,9 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 //
     public void				propertyChange(PropertyChangeEvent event) {
     	if(event.getPropertyName().equals(CollieModelPanel.MODEL_DIRTIED_CHANGED_PROPERTY)) {
-    		System.out.println("ok1");
     	    fileSaveAction.setEnabled(true);
     	    fileSaveAsAction.setEnabled(true);
     	}
-    	System.out.println("ok11");
     }
     
     
@@ -253,22 +259,34 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
     	public void				actionPerformed(ActionEvent event) {
     		 System.out.println(event.getActionCommand());
-    		 }
+    		 JSaveAsDialog jsad = new JSaveAsDialog();
+    		 
+    		 int returnVal = jsad.showSaveDialog(null);
+			 if ( returnVal == JFileChooser.APPROVE_OPTION ) 
+			 {
+				File file = jsad.getSelectedFile();
+				String name = file.getName();
+				String path = file.getAbsolutePath();
+				
+				
+				
+				System.out.println(path);
+				System.out.println(name);
+			 }
+    	}
     	
     }
     
     class FileNewAction extends AbstractAction {
 
-    	public				FileNewAction(String label,ImageIcon image) {
-	    super(label);
+    	public FileNewAction(String label,ImageIcon image) {
+			super(label);
     	}
 
-
-
-    	public void				actionPerformed(ActionEvent event) {
+    	public void actionPerformed(ActionEvent event) {
     		 ColliePanel panel = ColliePanel.getColliePanel();
     		 panel.raz();
-    		 }
+    	}
     	
     }
     
@@ -296,8 +314,9 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
     	public void				actionPerformed(ActionEvent event) {
     		 //getCollieFrame().ta
-    		 }
+		 }
     	
     }
+    
 
 }	// class CollieFrame
