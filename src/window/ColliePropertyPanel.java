@@ -108,6 +108,7 @@ public final class ColliePropertyPanel extends JPanel {
         		node_Selected.setClassifier((String) value);
         	fireTableDataChanged();
         	CollieModelPanel.getCollieModelPanel().repaint();
+        	CollieProjectPanel.rebuild();
         }
     
     }
@@ -145,7 +146,7 @@ public final class ColliePropertyPanel extends JPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {        	
         	if(node_Selected == null || rowIndex >= node_Selected.getAttributes().size()) return "";
         	String s1 = (String) node_Selected.getAttributes().get(rowIndex);
-        	String[] ts = s1.split(" ");
+        	String[] ts = s1.split(" : ");
         	if(ts.length > 1) 
         		return ts[columnIndex];
         	else if(ts.length == 1 && columnIndex == 0) 
@@ -155,26 +156,37 @@ public final class ColliePropertyPanel extends JPanel {
         }
         
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
-        	String s = ((String)value).replaceAll(" ", "_");
-        	if(s.equals("")) return;
+        	String s = ((String)value).replaceAll(":", "_");
         	
         	if(rowIndex >= node_Selected.getAttributes().size()){
-        		node_Selected.getAttributes().add((String)value);
-        	} else {
+        		if(s.equals(""))
+        			return;
+        		else
+        			node_Selected.getAttributes().add((String)s);
+        	} 
+        	else {
+        		if(s.equals("") && columnIndex == 0){
+        			node_Selected.getAttributes().remove(rowIndex);
+        			fireTableDataChanged();
+                	CollieModelPanel.getCollieModelPanel().repaint();
+                	CollieProjectPanel.rebuildAttributes(node_Selected);
+        			return;
+            	}
 	        	String   s1 = (String) node_Selected.getAttributes().get(rowIndex);
-	        	String[] c  = s1.split(" ");
+	        	String[] c  = s1.split(" : ");
 	        	if(c.length > 1) {
-		        	c[columnIndex] = (String) value;
-		        	node_Selected.getAttributes().set(rowIndex, c[0]+" "+c[1]);
-	        	} else if(c.length == 1)
-	        		node_Selected.getAttributes().set(rowIndex, c[0]+" "+s);
+		        	c[columnIndex] = (String) s;
+		        	node_Selected.getAttributes().set(rowIndex, c[0]+" : "+c[1]);
+	        	} else if(columnIndex == 0)
+	        		node_Selected.getAttributes().set(rowIndex, s);
 	        	else {
-	        		node_Selected.getAttributes().set(rowIndex, c[0]);
+	        		node_Selected.getAttributes().set(rowIndex, c[0]+" : "+s);
 	        	}
         	}
         	fireTableDataChanged();
         	CollieModelPanel.getCollieModelPanel().repaint();
-        }   	
+        	CollieProjectPanel.rebuildAttributes(node_Selected);
+        } 	
     }
     
 

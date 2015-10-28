@@ -30,7 +30,6 @@ public abstract class NodeElement	extends ModelElement {
     	
     	showFlag = false;
     	ColliePropertyPanel.getColliePropertyPanel().setNode(this);
-    	CollieProjectPanel.getCollieProjectPanel().build();
     }
 
     public		NodeElement(Point mousePoint) {
@@ -242,8 +241,10 @@ public abstract class NodeElement	extends ModelElement {
 							 m.delete((ModelElement)node.theRelations.get(i));
 						 //Suppression du noeud
 						 m.delete(node());
+						 prop.setNode(null);
 					 }
 					 m.repaint();
+					 CollieProjectPanel.rebuild();
 				 }
 			 };
 			       	    

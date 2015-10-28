@@ -31,7 +31,6 @@ import java.io.IOException;
 import javax.swing.*;
 import javax.swing.border.*;
 
-
 import collie.Collie;
 import diagram.ModelElement;
 import diagram.NodeElement;
@@ -59,6 +58,7 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     	if(event.getPropertyName().equals(CollieModelPanel.MODEL_DIRTIED_CHANGED_PROPERTY)) {
     	    fileSaveAction.setEnabled(true);
     	    fileSaveAsAction.setEnabled(true);
+    	    CollieProjectPanel.rebuild();
     	}
     }
     
@@ -246,6 +246,7 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     		System.out.println(event.getActionCommand());
     		CollieFrame c = CollieFrame.getCollieFrame();
     		c.dispatchEvent(new WindowEvent(c, WindowEvent.WINDOW_CLOSING));
+    		
     	}
     	
     }
