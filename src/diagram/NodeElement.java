@@ -30,6 +30,7 @@ public abstract class NodeElement	extends ModelElement {
     	
     	showFlag = false;
     	ColliePropertyPanel.getColliePropertyPanel().setNode(this);
+    	CollieProjectPanel.getCollieProjectPanel().build();
     }
 
     public		NodeElement(Point mousePoint) {

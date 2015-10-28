@@ -23,6 +23,10 @@ public class CollaborationDiagram {
     	    modelElements.add(element);
     }
     
+    public ArrayList getElements(){
+    	return modelElements;
+    }
+    
     
     
     public ModelElement		hitTest(int mouseX, int mouseY) {

@@ -20,7 +20,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.net.*;
+
 import javax.swing.*;
+
 import java.util.*;
 
 import collie.Collie;
@@ -73,6 +75,10 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
     
     public void			addModelElement(ModelElement element) {
     	diagram.add(element);
+    }
+    
+    public CollaborationDiagram getDiagram(){
+    	return diagram;
     }
     
     
@@ -361,6 +367,7 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
     	}
     	
     }	// inner class: ModelPanelMouseMotionListener
+
     
         
 }	// class: CollieModelPanel
