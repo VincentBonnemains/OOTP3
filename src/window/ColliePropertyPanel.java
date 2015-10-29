@@ -30,14 +30,17 @@ import diagram.NodeElement;
 public final class ColliePropertyPanel extends JPanel {
 
     public static ColliePropertyPanel	getColliePropertyPanel()	{ return colliePropertyPanel; }
+    //Noeud dont on affiche les données
     private NodeElement node_Selected;
+    //tableau des attributs de l'objet
     private JTable tableau_droite;
+    //tableau ref de l'objet
     private JTable tableau_gauche;
     
     protected 				ColliePropertyPanel() {
     	super();
     	this.setLayout(new GridLayout(1,2));
-        tableau_droite = new JTable(new modelTableAttributs());
+        tableau_droite = new JTable(new modelTableAttributs());     
         tableau_gauche = new JTable(new modeleRef());
         JScrollPane pleft = new JScrollPane(tableau_gauche);
     	JScrollPane pright = new JScrollPane(tableau_droite);
@@ -47,6 +50,7 @@ public final class ColliePropertyPanel extends JPanel {
     	
     }
     
+    //Appelé en cas de selection d'un autre noeud
     public void setNode(NodeElement e){
     	node_Selected = e;
     	((AbstractTableModel) tableau_droite.getModel()).fireTableDataChanged();
@@ -67,6 +71,7 @@ public final class ColliePropertyPanel extends JPanel {
     private static ColliePropertyPanel	colliePropertyPanel = new ColliePropertyPanel();
     
 // ---------- special class -------------------------------
+    //Model du tableau des ref de l'objet
     private class modeleRef extends AbstractTableModel {
     	private final String[] entetes = {"Reference", "Classe"};
 		@Override
@@ -106,6 +111,7 @@ public final class ColliePropertyPanel extends JPanel {
         		node_Selected.setName((String)value);
         	else
         		node_Selected.setClassifier((String) value);
+        	//Maj de l'affichage
         	fireTableDataChanged();
         	CollieModelPanel.getCollieModelPanel().repaint();
         	CollieProjectPanel.rebuild();
@@ -113,6 +119,7 @@ public final class ColliePropertyPanel extends JPanel {
     
     }
     
+    //Model du tableau des attributs
     private class modelTableAttributs extends AbstractTableModel {
      
         private final String[] entetes = {"Attributes", "Value"};
@@ -121,10 +128,15 @@ public final class ColliePropertyPanel extends JPanel {
             super();     
         }
      
-        @Override
+        /*On ne peut éditer que dans les cas suivant:
+         * l'attribut a un nom (pour éditer une valeur)
+         * On choisit la prochaine case des noms vide pour un nouvel attribut
+         */
         public boolean isCellEditable(int row, int column) {
+        	//Si pas de noeud selectionné ou si case pas suivante de derniere case remplie
         	if(node_Selected == null || row > node_Selected.getAttributes().size()) return false;
-
+        	
+        	//Si l'attribut n'a pas de nom, alors on ne peut pas entrer de valeur
         	if(column == 1 && row >= node_Selected.getAttributes().size()) 
         		return false;
         	
@@ -142,7 +154,8 @@ public final class ColliePropertyPanel extends JPanel {
         public String getColumnName(int columnIndex) {
             return entetes[columnIndex];
         }
-     
+        
+        //On affiche le nom de l'attribut, séparé de sa valeur par " : "
         public Object getValueAt(int rowIndex, int columnIndex) {        	
         	if(node_Selected == null || rowIndex >= node_Selected.getAttributes().size()) return "";
         	String s1 = (String) node_Selected.getAttributes().get(rowIndex);
@@ -158,15 +171,19 @@ public final class ColliePropertyPanel extends JPanel {
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
         	String s = ((String)value).replaceAll(":", "_");
         	
+        	//SI nouvel attribut
         	if(rowIndex >= node_Selected.getAttributes().size()){
+        		//Si on ne remplit rien on n'ajoute pas de nouvel attribut dans la liste
         		if(s.equals(""))
         			return;
         		else
         			node_Selected.getAttributes().add((String)s);
         	} 
         	else {
+        		//Si on supprime un attribut -> En mettant une chaine de caractère vide dans la case du nom
         		if(s.equals("") && columnIndex == 0){
         			node_Selected.getAttributes().remove(rowIndex);
+        			//Maj de l'affichage
         			fireTableDataChanged();
                 	CollieModelPanel.getCollieModelPanel().repaint();
                 	CollieProjectPanel.rebuildAttributes(node_Selected);
@@ -174,15 +191,20 @@ public final class ColliePropertyPanel extends JPanel {
             	}
 	        	String   s1 = (String) node_Selected.getAttributes().get(rowIndex);
 	        	String[] c  = s1.split(" : ");
+	        	//Si on a changé la valeur d'un attribut
 	        	if(c.length > 1) {
 		        	c[columnIndex] = (String) s;
 		        	node_Selected.getAttributes().set(rowIndex, c[0]+" : "+c[1]);
-	        	} else if(columnIndex == 0)
+	        	} 
+	        	//Ou si on change le nom d'un attribut qui n'a pas de valeur
+	        	else if(columnIndex == 0)
 	        		node_Selected.getAttributes().set(rowIndex, s);
+	        	//Ou si on donne une valeur a un attribut qui n'en avait pas
 	        	else {
 	        		node_Selected.getAttributes().set(rowIndex, c[0]+" : "+s);
 	        	}
         	}
+        	//Maj de l'affichage
         	fireTableDataChanged();
         	CollieModelPanel.getCollieModelPanel().repaint();
         	CollieProjectPanel.rebuildAttributes(node_Selected);

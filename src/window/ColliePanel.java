@@ -38,11 +38,6 @@ public final class ColliePanel 		extends JPanel {
     	this.add(projectDiagramPropertySplitPane, BorderLayout.CENTER);
     }
     
-    public void raz(){
-    	CollieModelPanel modelPanel = CollieModelPanel.getCollieModelPanel();
-    	modelPanel.raz();
-    }
-    
     
     public void		    	setDivider() {
     	projectDiagramSplitPane.setDividerLocation(0.2);

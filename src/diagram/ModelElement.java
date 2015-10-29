@@ -14,10 +14,11 @@ package diagram;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serializable;
 
 
 
-public abstract class ModelElement {
+public abstract class ModelElement implements Serializable{
 
     public boolean		isSelected()			{ return selectedFlag; }
     public void			setSelected(boolean selected)	{ selectedFlag = selected; }

@@ -13,9 +13,10 @@ package diagram;
 
 
 import java.awt.*;
-
 import java.awt.event.*;
+import java.io.Serializable;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
@@ -65,8 +66,7 @@ public abstract class NodeElement	extends ModelElement {
     
     
     public boolean	isShowAttributes()		{ return showFlag; }
-    public void		setShowAttributes(boolean show)	{ showFlag = show;
-    											       menu = new NodeElementMenu();}
+    public void		setShowAttributes(boolean show)	{ showFlag = show;}
     
     
     
@@ -77,8 +77,9 @@ public abstract class NodeElement	extends ModelElement {
     
     
     
-    public void		doRightMousePressed(MouseEvent event, Graphics graphicsContext) {        
-         menu.show(event.getComponent(), event.getX(), event.getY());
+    public void		doRightMousePressed(MouseEvent event, Graphics graphicsContext) {  
+    	NodeElementMenu menu = new NodeElementMenu();
+        menu.show(event.getComponent(), event.getX(), event.getY());
     }
     
     
@@ -92,6 +93,7 @@ public abstract class NodeElement	extends ModelElement {
     	ColliePropertyPanel.getColliePropertyPanel().setNode(this);
     	left_clicked = true;
     	theStartMousePoint = event.getPoint();
+    	//Mémorisation de la différence entre pointeur et noeud pour deplacément
     	diff_x = getLocation().getX()-theStartMousePoint.getX();
     	diff_y = getLocation().getY()-theStartMousePoint.getY();
     }
@@ -109,6 +111,7 @@ public abstract class NodeElement	extends ModelElement {
      *  it at its new location.
      */
     public void		doLeftMouseDragged(MouseEvent event, Graphics graphicsContext) {
+    	//Si on deplace la souris tout en ayant cliqué sur un noeud, on le déplace
     	if(left_clicked){
     		draw(graphicsContext);
     		theMousePoint = event.getPoint();
@@ -210,10 +213,9 @@ public abstract class NodeElement	extends ModelElement {
     
     protected Point				theMousePoint;		// during dragging
     protected Point				theStartMousePoint;
-    private 					NodeElementMenu menu = new NodeElementMenu();
 
   
-    private class NodeElementMenu extends JPopupMenu {    	
+    private class NodeElementMenu extends JPopupMenu{ 	
     	JMenuItem item1,item2,item3,item4;
     	ActionListener menuListener;
     	    
@@ -242,7 +244,10 @@ public abstract class NodeElement	extends ModelElement {
 						 //Suppression du noeud
 						 m.delete(node());
 						 prop.setNode(null);
+						 //Bouton save disponible
+						 CollieFrame.getCollieFrame().saveOpen();
 					 }
+					 //maj des panels
 					 m.repaint();
 					 CollieProjectPanel.rebuild();
 				 }

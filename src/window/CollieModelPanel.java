@@ -81,6 +81,11 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
     	return diagram;
     }
     
+    public void setDiagram(CollaborationDiagram diag){
+    	diagram = diag;
+    	paintComponent(getGraphics());
+    }
+    
     
     
     //
@@ -119,10 +124,13 @@ public final class CollieModelPanel 		extends JPanel implements PropertyChangeLi
     
     public void delete(ModelElement n){
     	diagram.delete(n);
+    	PropertyChangeEvent pce = new PropertyChangeEvent(this, MODEL_DIRTIED_CHANGED_PROPERTY, null, null);
+    	repaint();
     }
     
     public void	raz(){
     	diagram.eraseAll();
+    	//maj de l'affichage même avant de cliquer sur le panel
     	repaint();
     }
     

@@ -12,15 +12,21 @@ package diagram;
 
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.*;
 
 
 
-public class CollaborationDiagram {
+public class CollaborationDiagram implements Serializable{
 
     public void		add(ModelElement element) {
     	if(element != null)
     	    modelElements.add(element);
+    }
+    
+    public void delete(ModelElement element){
+    	if(element != null)
+    		modelElements.remove(element);
     }
     
     public ArrayList getElements(){
@@ -74,11 +80,6 @@ public class CollaborationDiagram {
     
     public void		eraseAll(){
     	modelElements.clear();
-    }
-    
-    public void delete(ModelElement m){
-    	modelElements.remove(m);
-    	
     }
     
     

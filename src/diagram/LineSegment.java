@@ -12,10 +12,11 @@ package diagram;
 
 
 import java.awt.*;
+import java.io.Serializable;
 
 
 
-public class LineSegment {
+public class LineSegment implements Serializable{
 
     public			LineSegment(Point start, Point finish) {
 	theStart = start;

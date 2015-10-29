@@ -29,6 +29,7 @@ public class JInstanceDialog extends JDialog {
 
   public JInstanceDialog(JFrame parent, String title, boolean modal,NodeElement n){
     super(parent, title, modal);
+    //On récupère le nom et la classe du noeud avant modification
     node = n;
     tabRef= n.getName();
     tabClasse = n.getClassifier();
@@ -41,7 +42,8 @@ public class JInstanceDialog extends JDialog {
 
   public NodeElement showDialog(){
     this.sendData = false;
-    this.setVisible(true);      
+    this.setVisible(true);
+    //On retourne le node modifié ou non
     return node;      
   }
 
@@ -57,6 +59,8 @@ public class JInstanceDialog extends JDialog {
     
     JPanel control = new JPanel();
     
+    
+    //Si on clique sur ok, on modifie les valeurs du noeud
     JButton okBouton = new JButton("confirm");
     okBouton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent arg0) {        
@@ -65,7 +69,8 @@ public class JInstanceDialog extends JDialog {
         setVisible(false);
       }
     });
-
+    
+    //Si on clique sur annuler, on n'applique pas les modifications
     JButton cancelBouton = new JButton("cancel");
     cancelBouton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent arg0) {
@@ -85,6 +90,7 @@ public class JInstanceDialog extends JDialog {
   }
     
   //------------------------------Classes privées------------------------------
+  //Model du tableau de données
   private class modelRef extends AbstractTableModel {
   	private final String[] entetes = {"Reference", "Classe"};
 		@Override
@@ -122,8 +128,8 @@ public class JInstanceDialog extends JDialog {
       	CollieModelPanel.getCollieModelPanel().repaint();
       }
   
-  }
+  }//-------------------classe modelRef-----------------------
     
       
          
-}
+}//------------------------------classe JInstanceDialog---------------------

@@ -26,6 +26,7 @@ public class JAttributesDialog extends JDialog {
 
   public JAttributesDialog(JFrame parent, String title, boolean modal,ArrayList<String> l){
     super(parent, title, modal);
+    //La liste des attributs est initialisée aux valeurs du noeud avant modification
     baseAttributes = l;
     this.setSize(370, 210);
     this.setLocationRelativeTo(null);
@@ -34,6 +35,7 @@ public class JAttributesDialog extends JDialog {
     this.initComponent();
   }
 
+  //On récupère la liste des attributs du noeud, modifée ou non selon le bouton cliqué
   public ArrayList<String> showDialog(){
     this.sendData = false;
     this.setVisible(true);      
@@ -54,6 +56,7 @@ public class JAttributesDialog extends JDialog {
     
     JButton okBouton = new JButton("confirm");
     okBouton.addActionListener(new ActionListener(){
+      //Si on clique sur "ok", on applique les modifications effectuées dans le tableau
       public void actionPerformed(ActionEvent arg0) {        
         baseAttributes = ((modelAttributes)tableau.getModel()).getAttributes();
         setVisible(false);
@@ -62,6 +65,7 @@ public class JAttributesDialog extends JDialog {
 
     JButton cancelBouton = new JButton("cancel");
     cancelBouton.addActionListener(new ActionListener(){
+      //Si on clique sur annuler, on n'applique pas les modifications effectuées dans le tableau
       public void actionPerformed(ActionEvent arg0) {
         setVisible(false);
       }      
@@ -79,6 +83,7 @@ public class JAttributesDialog extends JDialog {
   }
     
   //------------------------------Classes privées------------------------------
+  	 //Model du tableau utilisant la liste des attributs
      private class modelAttributes extends AbstractTableModel{
     	 ArrayList attributes = new ArrayList();
          private final String[] entetes = {"Attributes", "Value"};
@@ -146,7 +151,7 @@ public class JAttributesDialog extends JDialog {
           }
 	    	 
     }
-    
+    //-----------classe modelAttributs-------------
       
          
-}
+}//---------------classe JAttributesDialog---------------------

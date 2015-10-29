@@ -26,12 +26,18 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.filechooser.FileFilter;
 
 import collie.Collie;
+import diagram.CollaborationDiagram;
 import diagram.ModelElement;
 import diagram.NodeElement;
 import dialog.JAttributesDialog;
@@ -42,6 +48,10 @@ import dialog.JSaveAsDialog;
 
 
 public class CollieFrame	extends JFrame implements PropertyChangeListener {
+	//On retient le nom du fichier en cours d'édition
+	public static File fichierSauvegarde;
+	//firstSave == true si le fichier n'a jamais été sauvé
+	public static boolean firstSave;
 
     public static CollieFrame		getCollieFrame()	{ return collieFrame; }
     
@@ -58,7 +68,8 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     	if(event.getPropertyName().equals(CollieModelPanel.MODEL_DIRTIED_CHANGED_PROPERTY)) {
     	    fileSaveAction.setEnabled(true);
     	    fileSaveAsAction.setEnabled(true);
-    	    CollieProjectPanel.rebuild();
+    	    //Maj de l'arbre
+    	    CollieProjectPanel.rebuild(fichierSauvegarde);
     	}
     }
     
@@ -66,6 +77,7 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     
     protected				CollieFrame(String captionTitle) {
         super(captionTitle);
+        firstSave = true;
 
 	Container contentPane = this.getContentPane();
 	contentPane.setLayout(new BorderLayout());
@@ -85,6 +97,12 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
         
     this.addWindowListener(new WListener());
         
+    }
+    
+    //Mise à disposition des boutons de sauvegarde
+    public  void saveOpen(){
+    	fileSaveAction.setEnabled(true);
+	    fileSaveAsAction.setEnabled(true);
     }
 
 
@@ -206,8 +224,103 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
     class WListener extends WindowAdapter{
     	public void windowClosing(WindowEvent e){
+    		//Si l'application n'a pas été sauvegardée, on propose à l'utilisateur de le faire
+    		safeSave("Fermeture de l'application","Attention : Des modifications n'ont pas été enregistrées, Enregistrer avant de quitter?");
     		System.out.println("close propre");
     	}
+    }
+    
+    //Fonction qui demande a sauvegarder en cas de fermeture du fichier, en mettant "title" comme titre de la fenetre et "message" comme message d'information
+    public void safeSave(String title,String message){
+    	int option;
+    	//Si le fichier n'a pas été sauvegardé
+		if(fileSaveAction.isEnabled() == true){
+			JOptionPane jop = new JOptionPane();
+			option = jop.showConfirmDialog(null, 
+			        message,
+			        title, 
+			        JOptionPane.YES_NO_OPTION, 
+			        JOptionPane.WARNING_MESSAGE);
+			//Si l'utilisateur décide de sauvegarder
+			if(option == 0){
+				//Si c'est la premiere sauvegarde, on lui demande de choisir le nom du fichier
+				if(firstSave){
+	       		 	 JSaveAsDialog jsad = new JSaveAsDialog();
+	       		 	 //On vérifie que l'extension de fichier est bien la bonne
+		       		 String[] filt = new String[1];
+		       		 filt[0] = "col";
+		       		 jsad.setFileFilter(new Filtre(filt));
+		       		 int returnVal = jsad.showSaveDialog(null);
+		       		 //Si l'utilisateur n'a pas annulé
+		   			 if ( returnVal == JFileChooser.APPROVE_OPTION ) 
+		   			 {
+		   				fichierSauvegarde = jsad.getSelectedFile();
+		   				firstSave = false;
+		   				String path = fichierSauvegarde.getAbsolutePath();
+		   				//Si l'utilisateur n'a pas mis l'extension en fin de nom, on la rajoute
+						if(!path.endsWith(".col")) {
+						    File f = new File(path + ".col");
+						    fichierSauvegarde.delete();
+						    fichierSauvegarde = f;
+						}
+		   			 }
+		   			 else
+		   				 return;
+	    		}
+				System.out.println(fichierSauvegarde.getAbsolutePath());
+				//Ecriture dans le fichier
+				write(fichierSauvegarde);
+				//Bouton de sauvegarde plus disponible
+				fileSaveAction.setEnabled(false);
+			}
+		}
+    }
+    
+    
+    //Fonction de recuperation des données dans le fichier f
+    public void read(File f){
+    	ObjectInputStream flotLecture;
+        Object lu = null;
+		try {
+			flotLecture = new ObjectInputStream(new FileInputStream(f));
+			lu = flotLecture.readObject();
+			flotLecture.close();
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        CollaborationDiagram diagram;
+        if (lu instanceof CollaborationDiagram)
+        	diagram = (CollaborationDiagram)lu;
+        else
+        {
+        	JOptionPane jop = new JOptionPane();
+        	jop.showMessageDialog(null, "Message d'erreur", "Impossible d'ouvrir le fichier", JOptionPane.ERROR_MESSAGE);
+        	System.out.println("Erreur de lecture");
+        	return;
+        }
+        //Mise à jour de l'affichage
+        CollieModelPanel.getCollieModelPanel().setDiagram(diagram);
+        CollieProjectPanel.getCollieProjectPanel().rebuild(fichierSauvegarde);
+        ColliePropertyPanel.getColliePropertyPanel().setNode(null);
+    }
+    
+    //Fonction d'écriture des données dans le fichier f
+    public void write(File f){
+    	CollaborationDiagram diagram = CollieModelPanel.getCollieModelPanel().getDiagram();
+    	ObjectOutputStream flotEcriture;
+		try {
+			flotEcriture = new ObjectOutputStream(new FileOutputStream(f));
+			flotEcriture.writeObject(diagram);
+			flotEcriture.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//Afficher message d'erreur
+			JOptionPane jop = new JOptionPane();
+        	jop.showMessageDialog(null, "Message d'erreur", "Erreur d'écriture", JOptionPane.ERROR_MESSAGE);
+			System.out.println("Erreur d'écriture");
+			e.printStackTrace();
+		}
     }
     
 // ---------- inner class ---------------------------------
@@ -262,15 +375,28 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     	public void				actionPerformed(ActionEvent event) {
     		 System.out.println(event.getActionCommand());
     		 JSaveAsDialog jsad = new JSaveAsDialog();
-    		 
+    		 String[] filt = new String[1];
+    		 filt[0] = "col";
+    		 jsad.setFileFilter(new Filtre(filt));
     		 int returnVal = jsad.showSaveDialog(null);
+    		 //Si on a choisi un fichier valide
 			 if ( returnVal == JFileChooser.APPROVE_OPTION ) 
 			 {
-				File file = jsad.getSelectedFile();
-				String path = file.getAbsolutePath();				
-				
-				System.out.println(path);
-				//Enregistrer dans ce chemin absolu....
+				fichierSauvegarde = jsad.getSelectedFile();	
+				firstSave = false;
+				String path = fichierSauvegarde.getAbsolutePath();
+				//Si l'utilisateur n'a pas spécifié l'extension, on la rajoute
+				if(!path.endsWith(".col")) {
+				    File f = new File(path + ".col");
+				    fichierSauvegarde.delete();
+				    fichierSauvegarde = f;
+				}
+				//Mise à jour de l'affichage
+				CollieProjectPanel.rename(fichierSauvegarde);
+				System.out.println(fichierSauvegarde.getAbsolutePath());
+				write(fichierSauvegarde);
+				//Bouton de sauvegarde plus disponible
+				fileSaveAction.setEnabled(false);
 			 }
     	}
     	
@@ -283,8 +409,21 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     	}
 
     	public void actionPerformed(ActionEvent event) {
-    		 ColliePanel panel = ColliePanel.getColliePanel();
-    		 panel.raz();
+    		//Avertissement à l'utilisateur d'ouverture d'un nouveau projet
+    		int option;
+    		JOptionPane jop = new JOptionPane();
+        	option = jop.showConfirmDialog(null, "Vous allez ouvrir un nouveau projet, continuer?", "New", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        	if(option == 0){
+        		//Si sauvegarde du précédent projet n'a pas été effectuée, on la propose
+	    		safeSave("Creation d'un nouveau projet","Attention : Des modifications n'ont pas été enregistrées, Enregistrer avant de quitter?");
+	    		//Remise à zero des données et de l'affichage
+	    		fichierSauvegarde = null;
+	    		firstSave = true;
+	    		fileSaveAction.setEnabled(false);
+	    	    CollieModelPanel.getCollieModelPanel().raz();
+	    		ColliePropertyPanel.getColliePropertyPanel().setNode(null);
+	    		CollieProjectPanel.getCollieProjectPanel().rebuild(fichierSauvegarde);
+        	}
     	}
     	
     }
@@ -298,17 +437,32 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
 
     	public void				actionPerformed(ActionEvent event) {
+    		//Boolean servant à savoir s'il faut afficher la confirmation de la sauvegarde
+    		boolean confirmation = false;
+    		if(fileSaveAction.isEnabled() == true)
+    			confirmation = true;
     		 System.out.println(event.getActionCommand());
+    		 //Si l'utilisateur n'a pas sauvegardé, on lui propose de le faire
+    		 safeSave("Ouverture d'un projet","Attention : Des modifications n'ont pas été enregistrées, Enregistrer avant de quitter?");
+    		 //Si il accepte, on confirme la sauvegarde avant choix du projet à ouvrir
+    		 if(fileSaveAction.isEnabled() == false && confirmation == true){
+    			 JOptionPane info = new JOptionPane();
+    			 info.showMessageDialog(null, "Sauvegarde effectuée", "Information", JOptionPane.INFORMATION_MESSAGE);
+    		 }
+    		 //Choix du fichier à ouvrir
     		 JOpenDialog jod = new JOpenDialog();
-    		 
+    		 String[] filt = new String[1];
+    		 filt[0] = "col";
+    		 jod.setFileFilter(new Filtre(filt));
     		 int returnVal = jod.showOpenDialog(null);
+    		 //Si fichier valide
 			 if ( returnVal == JFileChooser.APPROVE_OPTION ) 
 			 {
-				File file = jod.getSelectedFile();
-				String path = file.getAbsolutePath();				
-				
-				System.out.println(path);
-				//Ouvrir ce fichier....
+				fichierSauvegarde = jod.getSelectedFile();				
+				firstSave = false;
+				System.out.println(fichierSauvegarde.getAbsolutePath());
+				read(fichierSauvegarde);
+				fileSaveAction.setEnabled(false);
 			 }
 		 }
     	
@@ -323,7 +477,37 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
 
     	public void				actionPerformed(ActionEvent event) {
-    		 //getCollieFrame().ta
+    		System.out.println(event.getActionCommand());
+    		//Si c'est la premiere fois qu'on sauvegarde, on demande à l'utilisateur de choisir le nom du fichier
+    		if(firstSave){
+       		 	 JSaveAsDialog jsad = new JSaveAsDialog();
+	       		 String[] filt = new String[1];
+	       		 filt[0] = "col";
+	       		 jsad.setFileFilter(new Filtre(filt));
+	       		 int returnVal = jsad.showSaveDialog(null);
+	       		 //Si l'utilisateur n'a pas annulé
+	   			 if ( returnVal == JFileChooser.APPROVE_OPTION ) 
+	   			 {
+	   				fichierSauvegarde = jsad.getSelectedFile();
+	   				firstSave = false;
+	   				String path = fichierSauvegarde.getAbsolutePath();
+	   				//On ajoute l'extension valide au besoin
+					if(!path.endsWith(".col")) {
+					    File f = new File(path + ".col");
+					    fichierSauvegarde.delete();
+					    fichierSauvegarde = f;
+					}
+					//Maj de l'arbre
+					CollieProjectPanel.rename(fichierSauvegarde);
+	   			 }
+	   			 else
+	   				 return;
+    		}
+    		//Ecriture dans le fichier
+			System.out.println(fichierSauvegarde.getAbsolutePath());
+			write(fichierSauvegarde);
+			//Bouton save plus disponible
+			fileSaveAction.setEnabled(false);
 		 }
     	
     }
