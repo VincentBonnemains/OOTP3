@@ -116,7 +116,7 @@ public abstract class NodeElement	extends ModelElement {
     		draw(graphicsContext);
     		theMousePoint = event.getPoint();
     		setLocation((int)(theMousePoint.getX()+diff_x),(int)(theMousePoint.getY()+diff_y));
-    		
+    		updateRelations((int)(theMousePoint.getX()+diff_x),(int)(theMousePoint.getY()+diff_y));
     		draw(graphicsContext);
     	}
     }
@@ -222,6 +222,7 @@ public abstract class NodeElement	extends ModelElement {
          NodeElementMenu() {
 			 menuListener = new ActionListener() {
 				 public void actionPerformed(ActionEvent event) {
+					 System.out.println(event.getActionCommand());
 					 CollieModelPanel m = CollieModelPanel.getCollieModelPanel();
 					 ColliePropertyPanel prop = ColliePropertyPanel.getColliePropertyPanel();
 					 NodeElement node = node();

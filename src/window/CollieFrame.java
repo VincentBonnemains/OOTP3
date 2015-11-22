@@ -227,6 +227,7 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     		//Si l'application n'a pas été sauvegardée, on propose à l'utilisateur de le faire
     		safeSave("Fermeture de l'application","Attention : Des modifications n'ont pas été enregistrées, Enregistrer avant de quitter?");
     		System.out.println("close propre");
+    		System.exit(0);
     	}
     }
     
@@ -335,9 +336,9 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
     	public void				actionPerformed(ActionEvent event) {
 	    String message = "COLLIE\n";
-	    message += "Author  : K Barclay\n";
-	    message += "Version : 1\n";
-	    message += "Date    : October 2001";
+	    message += "Author  : A GUSTIN et V BONNEMAINS\n";
+	    message += "Version : 2\n";
+	    message += "Date    : Novembre 2015";
 	    JOptionPane.showMessageDialog(CollieFrame.this, message, "COLLIE", JOptionPane.INFORMATION_MESSAGE);
     	}
     	
@@ -409,6 +410,7 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
     	}
 
     	public void actionPerformed(ActionEvent event) {
+    		System.out.println(event.getActionCommand());
     		//Avertissement à l'utilisateur d'ouverture d'un nouveau projet
     		int option;
     		JOptionPane jop = new JOptionPane();
@@ -437,11 +439,11 @@ public class CollieFrame	extends JFrame implements PropertyChangeListener {
 
 
     	public void				actionPerformed(ActionEvent event) {
+    		System.out.println(event.getActionCommand());
     		//Boolean servant à savoir s'il faut afficher la confirmation de la sauvegarde
     		boolean confirmation = false;
     		if(fileSaveAction.isEnabled() == true)
     			confirmation = true;
-    		 System.out.println(event.getActionCommand());
     		 //Si l'utilisateur n'a pas sauvegardé, on lui propose de le faire
     		 safeSave("Ouverture d'un projet","Attention : Des modifications n'ont pas été enregistrées, Enregistrer avant de quitter?");
     		 //Si il accepte, on confirme la sauvegarde avant choix du projet à ouvrir
